@@ -253,14 +253,14 @@
   <section id="contribute" class="contribute">
     <h2>How to add your name to this page</h2>
     <p class="section-desc">
-      This page is community-maintained. Add your profile by opening a Pull Request.
+      This page is community-maintained. Add your profile by opening a Pull Request. The site automatically discovers and displays all JSON files in the students/ folder (excluding the template).
     </p>
 
 <pre>git clone https://github.com/jubcse2026/jubcse2026.github.io.git
 cd jubcse2026.github.io
 cp students/template.json students/your-roll.json
+# edit students/your-roll.json with your details
 # add your photo to images/
-# add "your-roll.json" to students/index.json
 git add .
 git commit -m "Add profile: your name"
 git push</pre>
@@ -282,19 +282,24 @@ async function loadStudents(){
   const empty=document.getElementById('empty');
 
   try{
-    const res=await fetch('students/index.json',{cache:'no-store'});
-    if(!res.ok) throw 0;
+    // Fetch list of files from GitHub API
+    const apiRes=await fetch('https://api.github.com/repos/jubcse2026/jubcse2026.github.io/contents/students');
+    if(!apiRes.ok) throw 0;
 
-    const list=await res.json();
-    if(!Array.isArray(list) || list.length===0){
+    const files=await apiRes.json();
+    const jsonFiles=files
+      .filter(f=>f.name.endsWith('.json') && f.name !== 'template.json' && f.name !== 'index.json')
+      .map(f=>f.name);
+
+    if(!jsonFiles.length){
       empty.style.display='block';
       return;
     }
 
     const students=await Promise.all(
-      list.map(async f=>{
+      jsonFiles.map(async f=>{
         try{
-          const r=await fetch('students/'+f);
+          const r=await fetch('students/'+f,{cache:'no-store'});
           return r.ok ? await r.json() : null;
         }catch{ return null; }
       })

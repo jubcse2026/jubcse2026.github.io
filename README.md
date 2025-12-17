@@ -9,8 +9,9 @@ How to contribute (step-by-step)
 1. Fork this repository and create a new branch for your profile.
 2. Add your portrait image to the `images/` folder. Recommended: square JPG/PNG, ~300–800px on the long edge. Example filename: `images/sourav-kumar.jpg`.
 3. Create a JSON file for your profile inside the `students/` folder. Copy the provided template `students/template.json` and save as `students/<your-id>.json` (for example `students/sourav-kumar.json`).
-4. Open `students/index.json` and add the filename of your profile JSON to the array (for example add `"sourav-kumar.json"`). Keep the list sorted however you prefer.
-5. Commit your changes and open a Pull Request to this repository. After review the maintainer will merge and your profile will appear on the site.
+4. Commit your changes and open a Pull Request to this repository. After review the maintainer will merge and your profile will appear on the site automatically.
+
+**Note:** The site automatically discovers all JSON files in the `students/` folder (excluding `template.json`) and displays them. No manual manifest updates are needed.
 
 Student JSON template and fields
 --------------------------------
@@ -32,20 +33,14 @@ Example `students/sourav-kumar.json`
 }
 ```
 
-Manifest (`students/index.json`)
---------------------------------
-
-The file `students/index.json` is a simple array of filenames that the site reads to know which student files to load. When you open a PR, include an update to this file adding your JSON filename.
-
 Tips
 ----
 - Keep image filenames unique and include your id.
-- Keep the `students/index.json` edits small — only add your filename.
 - If unsure, open a draft PR and ask in the description.
 
 Site preview
 ------------
-After merging, GitHub Pages (or any static server) will serve the site at the repository URL. The homepage reads `students/index.json` and the listed JSON files and renders the tiles.
+After merging, GitHub Pages (or any static server) will serve the site at the repository URL. The homepage automatically discovers and loads all JSON files in the `students/` folder (excluding `template.json`) and renders the tiles.
 
 Privacy / content
 -----------------
@@ -53,5 +48,5 @@ Only include content you're comfortable publishing. By opening a PR you confirm 
 
 Maintainer notes
 ----------------
-- If you prefer alphabetical order, sort `students/index.json` before merging.
+- Profiles are displayed in the order returned by the GitHub API (typically alphabetical by filename).
 - Optionally compress uploaded images for faster load times.
