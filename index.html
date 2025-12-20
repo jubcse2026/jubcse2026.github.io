@@ -161,6 +161,27 @@
       padding:40px 0;
     }
 
+    /* Closing quote / epigraph */
+    .epigraph{
+      margin:40px 0 20px;
+      text-align:center;
+    }
+    .epigraph blockquote{
+      display:block;
+      width:min(90%,900px);
+      margin:0 auto;
+      font-style:italic;
+      font-family:Merriweather,serif;
+      font-size:clamp(15px,2vw,18px);
+      color:var(--text);
+      border-left:4px solid var(--border);
+      padding:12px 18px;
+      background:var(--card);
+      border-radius:8px;
+      box-shadow:0 6px 18px rgba(2,6,23,.04);
+      line-height:1.5;
+    }
+
     /* Batch photo */
     .batch img{
       max-width:100%;
@@ -271,6 +292,12 @@ git push
     <p class="section-desc">
       Full instructions are available in the repository README.
     </p>
+  </section>
+
+  <section class="epigraph">
+    <blockquote>
+      "Engineering is not just about earning big bucks; it is about solving difficult problems and bringing abstract ideas into reality that improve people's lives."
+    </blockquote>
   </section>
 
 </main>
