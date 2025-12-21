@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Album — JU BCSE Yearbook</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f8fafc;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#e5e7eb;
+      --accent:#1e3a8a;
+      --accent-soft:#eff6ff;
+      --year:#dc2626;
+    }
+
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);line-height:1.65}
+
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .container{max-width:1100px;margin:0 auto;padding:0 20px}
+
+    header{background:linear-gradient(180deg,#020617,#0f172a);color:#fff;padding:28px 0 34px}
+    .header-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:14px}
+    .brand img{height:52px;width:auto;background:#fff;border-radius:6px;padding:4px}
+    header h1{margin:0;font-family:Merriweather,serif;font-size:26px;font-weight:700}
+    header p{margin:6px 0 0;color:#c7d2fe;font-size:14px}
+    .repo{font-size:13px;background:rgba(255,255,255,.1);padding:8px 12px;border-radius:6px;color:#fff;white-space:nowrap}
+
+    section{margin-top:44px}
+    h2{font-family:Merriweather,serif;font-size:20px;margin-bottom:6px}
+    .section-desc{color:var(--muted);font-size:14px;margin-bottom:18px}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;transition:.15s ease}
+    .card img{width:100%;height:220px;object-fit:cover;border-radius:12px;background:#e5e7eb}
+    .caption{margin-top:10px;font-size:14px;color:var(--muted);text-align:center}
+
+    .empty{text-align:center;color:var(--muted);padding:40px 0}
+
+    footer{margin:56px 0 28px;text-align:center;color:var(--muted);font-size:13px}
+
+    @media(max-width:640px){header h1{font-size:22px}.brand img{height:44px}}
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="container header-row">
+    <div class="brand">
+      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/58/Jadavpur_University_Logo.svg/250px-Jadavpur_University_Logo.svg.png"
+           alt="Jadavpur University Logo">
+      <div>
+        <h1>
+          Jadavpur University — BCSE
+          <span class="year">2026</span>
+        </h1>
+        <p>Graduating Batch · Digital Yearbook</p>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;align-items:center">
+      <a class="repo" href="index.html">Home</a>
+      <a class="repo" href="https://github.com/jubcse2026/jubcse2026.github.io" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <section>
+    <h2>Album</h2>
+    <p class="section-desc">A collection of memorable moments. Images are loaded from the <code>album/</code> folder; captions come from the image filenames.</p>
+
+    <div id="albumGrid" class="grid"></div>
+    <div id="emptyAlbum" class="empty" style="display:none">No photos yet. Add images to the <code>album/</code> folder to have them appear here.</div>
+  </section>
+</main>
+
+<footer>
+  © 2026 Jadavpur University — Computer Science & Engineering
+</footer>
+
+<script>
+  function formatCaption(filename){
+    let n = filename.replace(/\.[^/.]+$/, '');
+    try{ n = decodeURIComponent(n); }catch{}
+    n = n.replace(/[_-]+/g,' ');
+    return n.split(' ').map(w=> w ? (w.charAt(0).toUpperCase()+w.slice(1)) : '').join(' ').trim();
+  }
+
+  async function loadAlbum(){
+    const grid = document.getElementById('albumGrid');
+    const empty = document.getElementById('emptyAlbum');
+
+    function render(names, baseUrl){
+      if(!names || !names.length){ empty.style.display='block'; return; }
+      names.forEach(name=>{
+        const file = name.replace(/^\.\//, '').split('?')[0].split('#')[0];
+        const card = document.createElement('article');
+        card.className = 'card';
+
+        const img = document.createElement('img');
+        img.src = baseUrl + file;
+        img.alt = file;
+        img.onerror = ()=>{ img.style.display='none'; };
+
+        const caption = document.createElement('div');
+        caption.className = 'caption';
+        caption.textContent = formatCaption(file);
+
+        card.append(img, caption);
+        grid.appendChild(card);
+      });
+    }
+
+    // 1) Try GitHub API (remote)
+    try{
+      const apiRes = await fetch('https://api.github.com/repos/jubcse2026/jubcse2026.github.io/contents/album');
+      if(apiRes.ok){
+        const files = await apiRes.json();
+        const imageFiles = files.filter(f=>/\.(jpe?g|png|gif|webp|svg)$/i.test(f.name)).map(f=>f.name);
+        if(imageFiles.length){
+          render(imageFiles, 'https://raw.githubusercontent.com/jubcse2026/jubcse2026.github.io/main/album/');
+          return;
+        }
+      }
+    }catch(e){ /* ignore, fall back to local */ }
+
+    // 2) Fallback: try the server directory listing at ./album/ (useful for local http.server)
+    try{
+      const res = await fetch('./album/');
+      if(res.ok){
+        const text = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+        const anchors = Array.from(doc.querySelectorAll('a'));
+        const imageFiles = anchors.map(a=>a.getAttribute('href')).filter(h=>h && /\.(jpe?g|png|gif|webp|svg)$/i.test(h));
+        if(imageFiles.length){
+          render(imageFiles, './album/');
+          return;
+        }
+      }
+    }catch(e){ /* ignore */ }
+
+    // If nothing found
+    empty.style.display='block';
+  }
+
+  document.addEventListener('DOMContentLoaded', loadAlbum);
+</script>
+
+</body>
+</html>
