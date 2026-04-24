@@ -330,7 +330,7 @@ async function loadStudents(){
           const r=await fetch('https://raw.githubusercontent.com/jubcse2026/jubcse2026.github.io/main/students/'+f,{cache:'no-store'});
           if(r.ok){
             const data = await r.json();
-            data.roll = data.id || f.replace('.json', '');
+            data.roll = f.replace('.json', '');
             return data;
           }
           return null;
